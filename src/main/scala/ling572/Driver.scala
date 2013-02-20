@@ -17,7 +17,7 @@ object Driver extends App {
   }
 
   if (args.length < 2 || args.length > 3)
-   exit("Error: usage Q4Driver training_data output_file [model_file]")
+   exit("Error: usage Driver training_data output_file [model_file]")
 
   try {
     this.trainingData = new File(args(0))
@@ -43,16 +43,6 @@ object Driver extends App {
 
   val instances = SVMLightReader.indexInstances(trainingData).asScala.toList
 
-  val expectation = new ModelExpectation()
-  expectation.setInstances(instances)
 
-  if (modelFile != null) {
-    val maxEnt = new MaxEntModel()
-    maxEnt.loadFromFile(modelFile)
-    expectation.setMaxEntModel(maxEnt)
-  }
-
-  expectation.build()
-  expectation.generateOutput(outputFile)
 }
 

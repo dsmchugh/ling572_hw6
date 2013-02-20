@@ -16,7 +16,7 @@ public class SVMLightReaderTest {
 	Instance instance17;
 	
 	{
-		String location = "examples\\ex\\test.txt";
+		String location = "examples/ex/test.txt";
 		File testFile = new File(location);
 		this.instances = SVMLightReader.indexInstances(testFile);
 		this.instance17 = this.instances.get(17);
