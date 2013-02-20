@@ -4,11 +4,11 @@ import java.util.*;
 
 public class Instance {
 
+	private String name;
     private String label;
     private Map<String,Integer> features;
 
-    public Instance(String label) {
-        this.label = label;
+    public Instance() {
         this.features = new HashMap<String,Integer>();
     }
 
@@ -19,8 +19,24 @@ public class Instance {
     public String getLabel() {
         return this.label;
     }
+    
+    public void setLabel(String label) {
+    	this.label = label;
+    }
+    
+    public String getName() {
+    	return this.name;
+    }
+    
+    public int getSize() {
+    	return this.features.size();
+    }
+    
+    public void setName(String name) {
+    	this.name = name;
+    }
 
-    public boolean hasFeature(String feature) {
+    public boolean containsFeature(String feature) {
         return this.features.containsKey(feature);
     }
 
@@ -29,7 +45,7 @@ public class Instance {
     }
 
     public Integer getFeatureValueOrDefault(String feature, int val) {
-        if (this.hasFeature(feature))
+        if (this.containsFeature(feature))
             return this.features.get(feature);
         else
             return val;
