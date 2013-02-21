@@ -6,19 +6,19 @@ import java.io.*;
 import static org.junit.Assert.*;
 
 import ling572.util.Instance;
-import ling572.util.SVMLightReader;
+import ling572.util.VectorFileReader;
 
 
 import org.junit.Test;
 
-public class SVMLightReaderTest {
+public class VectorFileReaderTest {
 	List<Instance> instances;
 	Instance instance17;
 	
 	{
 		String location = "examples/ex/test.txt";
 		File testFile = new File(location);
-		this.instances = SVMLightReader.indexInstances(testFile);
+		this.instances = VectorFileReader.indexInstances(testFile);
 		this.instance17 = this.instances.get(17);
 	}
 	

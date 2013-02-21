@@ -3,7 +3,7 @@ package ling572.util;
 import java.io.*;
 import java.util.*;
 
-public class SVMLightReader {
+public class VectorFileReader {
     public static List<Instance> indexInstances(File dataFile) {
         List<Instance> instances = new ArrayList<Instance>();
 
