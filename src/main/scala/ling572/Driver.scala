@@ -1,6 +1,6 @@
 package ling572
 
-import ling572.util.SVMLightReader
+import ling572.util.VectorFileReader
 import java.io.File
 
 import scala.collection.JavaConverters._
@@ -41,7 +41,7 @@ object Driver extends App {
     this.modelFile = null
   }
 
-  val instances = SVMLightReader.indexInstances(trainingData).asScala.toList
+  val instances = VectorFileReader.indexInstances(trainingData).asScala.toList
 
 
 }
