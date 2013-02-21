@@ -26,32 +26,20 @@ public class BeamSearch {
 	}
 	
 	public void search(List<Instance> instances) {
-		int i = 0;
-		
-		Map<String, Double> firstTags = getTopTags(instances.get(i));
-		this.setNodes(rootNode, firstTags);
-		
-		for (i++; i < instances.size(); i++) {
-			Instance instance = instances.get(i);
-			System.out.print(instance.getName() + " ");
-			
+		for (Instance instance : instances) {			
 			for (BeamSearchNode node : this.rootNode.getLeaves()){
-				String prevTagFeat = this.getPrevTagFeat(node.getParentTag());
-				String prevTwoTagsFeat;
+				String prevTagFeat = this.getPrevTagFeat(node.getTag());
+				String prevTwoTagsFeat = this.getPrevTwoTagsFeat(node.getParentTag(), node.getTag());
 				
-				if (node.getParent() == null)
-					prevTwoTagsFeat = this.getPrevTwoTagsFeat(node.getParentTag(), node.getParentTag());
-				else
-					prevTwoTagsFeat = this.getPrevTwoTagsFeat(node.getParent().getParentTag(), node.getParentTag());
-				
-				//TODO check if max ent model contains feats
-						
-				System.out.println(prevTagFeat);
-				
-				instance.addFeature(prevTagFeat, 1);
-				instance.addFeature(prevTwoTagsFeat, 1);
-				
-				Map<String, Double> topTags = getTopTags(instances.get(i));
+				if (model.containsFeature(prevTagFeat))
+					instance.addFeature(prevTagFeat, 1);
+
+				if (model.containsFeature(prevTwoTagsFeat))
+					instance.addFeature(prevTwoTagsFeat, 1);
+
+				System.out.println(instance.getName() + " " + prevTagFeat + " " + prevTwoTagsFeat + " " + node.getPathProb());
+							
+				Map<String, Double> topTags = getTopTags(instance);
 				this.setNodes(node, topTags);
 				
 				instance.removeFeature(prevTwoTagsFeat);
@@ -60,8 +48,6 @@ public class BeamSearch {
 			
 			this.pruneNodes();
 		}
-		
-		System.out.println();
 	}
 	
 	private void pruneNodes() {
