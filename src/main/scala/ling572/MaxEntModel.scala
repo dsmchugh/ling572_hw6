@@ -26,6 +26,10 @@ class MaxEntModel {
      lambdasByClass.map(kv => (kv._1, kv._2.toMap)).toMap
   }
 
+  lazy val features:Set[String] = {
+     lambdasByClass.flatMap(kv => kv._2.keySet).toSet
+  }
+
   lazy val classLabels = constLambdasByClass.keys.toSeq.sorted
 
   def classLambdasJava: java.util.HashMap[String, java.util.HashMap[String,java.lang.Double]] = {
@@ -78,5 +82,7 @@ class MaxEntModel {
     scores._2.foreach(kv => map.put(kv._1, kv._2))
     map
   }
+
+  def containsFeature(feature:String) = features.contains(feature)
 
 }
