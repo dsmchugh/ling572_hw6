@@ -37,10 +37,10 @@ public class BeamSearch {
 				if (model.containsFeature(prevTwoTagsFeat))
 					instance.addFeature(prevTwoTagsFeat, 1);
 
-				System.out.println(instance.getName() + " " + prevTagFeat + " " + prevTwoTagsFeat + " " + node.getPathProb());
+				//System.out.println(instance.getName() + " " + prevTagFeat + " " + prevTwoTagsFeat + " " + node.getNodeProb());
 							
 				Map<String, Double> topTags = getTopTags(instance);
-				this.setNodes(node, topTags);
+				this.setNodes(node, topTags, instance.getName(), instance.getLabel());
 				
 				instance.removeFeature(prevTwoTagsFeat);
 				instance.removeFeature(prevTagFeat);
@@ -109,9 +109,9 @@ public class BeamSearch {
 		return sortByValueDesc(model.scoreInstanceJava(instance), this.topN);
 	}
 	
-	private void setNodes(BeamSearchNode node, Map<String, Double> newTags) {
+	private void setNodes(BeamSearchNode node, Map<String, Double> newTags, String name, String goldTag) {
 		for (Map.Entry<String, Double> entry : newTags.entrySet()) {
-			node.createChild(entry.getKey(), entry.getValue());
+			node.createChild(entry.getKey(), entry.getValue(), name, goldTag);
 		}
 	}
 
