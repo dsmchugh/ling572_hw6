@@ -1,0 +1,70 @@
+%%!TEX TS-program = xelatexmk
+\documentclass[oneside,justified,marginals=raggedouter]{tufte-handout}
+\usepackage{fontspec,xltxtra,xunicode}
+\usepackage{enumerate}
+\usepackage{booktabs}
+\usepackage[fleqn]{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usetikzlibrary{plotmarks}
+
+\defaultfontfeatures{Mapping=tex-text}
+\setmainfont[%Mapping=tex-text,
+  BoldFont={Haarlemmer MT Std Bold},
+  SlantedFont={Haarlemmer MT Std Italic},
+  ItalicFont={Haarlemmer MT Std Italic},
+  BoldItalicFont={Haarlemmer MT Std Bold Italic},
+  SmallCapsFont={Haarlemmer MT Std: +smcp}
+]{Haarlemmer MT Std}
+\setsansfont[Scale=MatchLowercase,Mapping=tex-text]{TeX Gyre Heros}
+\setmonofont[Scale=MatchLowercase,Ligatures={NoRequired,NoCommon,NoContextual}]{TeX Gyre Cursor}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+% XeTeX workaround for tufte-latex (otherwise need to use xetex or nols options)
+\renewcommand{\allcapsspacing}[1]{{\addfontfeature{LetterSpace=20.0}#1}}
+\renewcommand{\smallcapsspacing}[1]{{\addfontfeature{LetterSpace=5.0}#1}}
+\renewcommand{\textsc}[1]{\smallcapsspacing{\textsmallcaps{#1}}}
+\renewcommand{\smallcaps}[1]{\smallcapsspacing{\scshape\MakeTextLowercase{#1}}}
+
+\widowpenalty=1000
+\clubpenalty=1000
+\raggedbottom
+\hyphenpenalty=5000
+\tolerance=1000
+
+\title{LING 572 Homework 6}
+\author{David McHugh and Chris Curtis}
+\date{23 Feb 2013}
+
+\clearpage\relax
+
+\begin{document}
+\maketitle
+
+
+\section{Question 2}
+
+Results for beam search on the full data set:
+\vskip\baselineskip
+
+\begin{tabular}{@{}rccrr@{}}
+\toprule
+beam\_size & topN & topK & Test accuracy & Running time \\ \midrule
+0 & 1 & 1    & 0.964005 & 1:22.963 \\
+1 & 3 & 5    & 0.965204 & 2:00.621 \\
+2 & 5 & 10   & 0.965181 & 2:54.129 \\
+3 & 10 & 100 & 0.965196 & 5:55.032 \\
+\bottomrule
+\end{tabular}
+
+
+\section{Question 3}
+
+From these results we conclude that beam search with the proper parameters does improve accuracy, but at the expense of
+increased runtime. Furthermore, setting the parameters too high significantly increases runtime but even slightly decreases
+accuracy.\footnote{This variation is probably not significant, and is likely attributable to accumulation of floating-point errors in different computation sequences.} This comports with the intuitive analysis that beyond a certain point expanding the
+search space merely increases the number of hypotheses the tagger must test, even when they are vanishingly
+likely to be correct.
+
+\end{document}
