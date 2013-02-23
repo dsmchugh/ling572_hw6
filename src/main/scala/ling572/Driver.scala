@@ -1,7 +1,7 @@
 package ling572
 
 import util.{ConditionalFreqDist, Instance, VectorFileReader}
-import java.io.File
+import java.io.{PrintWriter, File}
 import scala.collection._
 import scala.collection.JavaConverters._
 import annotation.tailrec
@@ -16,6 +16,7 @@ object Driver extends App {
   var topN:Int = 0
   var topK:Int = 0
 
+  ////////////// argument parsing ///////////////////
 
   def exit(errorText:String) {
     System.out.println(errorText)
@@ -68,66 +69,82 @@ object Driver extends App {
     case e:Exception => exit("Error: invalid top_K")
   }
 
-  val model = new MaxEntModel()
+  ////////////// setup ///////////////////
+
+  val model:MaxEntModel = new MaxEntModel()
   model.loadFromFile(modelFile)
 
   val allInstances = VectorFileReader.indexInstances(testData).asScala
 
   val boundaries = scala.io.Source.fromFile(boundaryData).getLines().map(x => x.toInt).toSeq
   val confusionMatrix = new ConditionalFreqDist[String]()
+  val sysOut = new PrintWriter(outputFile)
+  sysOut.println("\n%%%%% test data:")
   var count = 0
   var correct = 0
 
+  ///////////// search /////////////////
+
+  // helper function
   @tailrec
   def sentenceSearch(instances:Seq[Instance], boundaries:Seq[Int])  {
-    if (boundaries.isEmpty) return
+    if (boundaries.isEmpty || instances.isEmpty) return
 
     val s_length = boundaries.head
     val beamSearch = new BeamSearch(topK, topN, beamSize, model)
     beamSearch.search( (instances take s_length).asJava )
 
     var node = beamSearch.getBestNode
-
     val tags = new mutable.ArrayBuffer[String]
-
+    val nodes = new mutable.ArrayBuffer[BeamSearchNode]
     while (node.getParent != null) {
       tags += node.getTag
-      //tags += (node.getName + " " + node.getGoldTag + " " + node.getTag + " " + node.getNodeProb)
+      nodes += node
       node = node.getParent
     }
 
-    tags.reverse zip (instances.map( instance => instance.getLabel)) foreach { case (tag , gold) =>
+    // sys_out
+    nodes.reverse.foreach {  node =>
+      sysOut.println(node.getName + " " + node.getGoldTag + " " + node.getTag + " " + node.getNodeProb)
+    }
+
+    // confusion matrix
+    val instanceLabels = instances.map( instance => instance.getLabel )
+    tags.reverse zip instanceLabels foreach { case (tag , gold) =>
       count += 1
       if (tag.equals(gold)) correct += 1
       confusionMatrix.add(gold, tag)
     }
+
+    // recurse
     sentenceSearch(instances drop s_length, boundaries.tail)
   }
 
-  /// do tagging
+  // do tagging
   sentenceSearch(allInstances,boundaries)
 
+  /////////// output ////////////
 
-  /////// output
+  println("class_num=" + model.classLabels.length + " feat_num=" + model.features.size + "\n")
+
+  println("Confusion matrix for the test data:\nrow is the truth, column is the system output\n")
+
 
   // print confusion matrix
   val classLabels = confusionMatrix.keySet.toSeq.sorted
 
-  print("\t\t")
+  print("\t")
   for (label <- classLabels) print(label + " ")
   println()
   for (gold <- classLabels) {
-    print(gold + "\t")
+    print(gold + " ")
     for (label <- classLabels) {
-      print(confusionMatrix.N(gold, label) + "\t")
+      print(confusionMatrix.N(gold, label) + " ")
     }
     println()
   }
 
-  println(" Accuracy: " + (correct.toDouble) / count.toDouble)
-  //for (tag <- tags.reverse) {
-  //  System.out.println(tag)
-  //}
+  println(" Test accuracy=" + (correct.toDouble) / count.toDouble)
 
 }
 
